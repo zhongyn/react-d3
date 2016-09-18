@@ -14,18 +14,20 @@
   <body>
 
     <div id="content"></div>
+    <div data-rainbow-graph='{percent: 0.75}'></div>
+    <div data-rainbow-graph='{percent: 0.5}'></div>
     <!-- <script type="text/babel" src="scripts/example.js"></script> -->
     <script type="text/babel">
       // To get started with this tutorial running your own code, simply remove
       // the script tag loading scripts/example.js and start writing code here.
 
       var data = {
-        width: 300,
-        height: 150,
+        width: 150,
+        height: 75,
         bgColor: "grey",
         midColor: "white",
         fgColor: "blue",
-        arcWidth: 20,
+        arcWidth: 8,
         percent: 0.75
       };
 
@@ -40,38 +42,42 @@
 
       var RainbowGraph = React.createClass({
         getInitialState: function() {
-          return {leftArc: ''};
+          return {fgArc: '', midArc: ''};
         },
 
         increaseAngle: function(steps, runs) {
-          var endAngle = (runs * this.props.data.percent / steps - 0.5) * pi;
-          var leftArc = arc({endAngle: endAngle});
-          this.setState({leftArc: leftArc});
+          var fgEndAngle = (runs * this.props.data.percent / steps - 0.5) * pi;
+          var fgArc = arc({endAngle: fgEndAngle});
+          var midArc = arc({endAngle: fgEndAngle + 0.04});
+          this.setState({fgArc: fgArc, midArc: midArc});
         },
 
         componentDidMount: function() {
-          var steps = 60;
+          var steps = 80;
           var runs = 0;
           var interval = setInterval(function(){
               runs += 1;
-              if (runs === steps) {
+              if (runs > steps) {
                 clearInterval(interval);
-                // return;
+                return;
               } else {
                 this.increaseAngle(steps, runs);
               }
-          }.bind(this), 1);
+          }.bind(this), 8);
         },
 
         render: function() {
           var width = this.props.data.width;
           var height = this.props.data.height;
           var transform = "translate(" + width/2 + "," + height + ")";
+          var bgArc = arc({endAngle: 0.5*pi});
 
           return (
             <svg width={width} height={height}>
               <g transform={transform}>
-                <path d={this.state.leftArc} style={{fill: 'blue'}}></path>
+                <path d={bgArc} style={{fill: 'grey'}}></path>
+                <path d={this.state.midArc} style={{fill: 'white'}}></path>
+                <path d={this.state.fgArc} style={{fill: 'blue'}}></path>
               </g>
             </svg>
           );
