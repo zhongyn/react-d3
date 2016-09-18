@@ -36,35 +36,30 @@
       var bgEndAngle = 0.5 * pi;
       var fgEndAngle = (data.percent - 0.5) * pi;
       var midEndAngle = fgEndAngle + 0.02;
+      var arc = d3.arc()
+          .innerRadius(innerRadius)
+          .outerRadius(outerRadius)
+          .startAngle(startAngle);
 
       var RainbowGraph = React.createClass({
         getInitialState: function() {
           return {leftArc: ''};
         },
-
-        increaseAngle: function(steps, runs) {
-          var startAngle = -0.5 * Math.PI;
-          var endAngle = (runs * 0.75 / steps - 0.5) * Math.PI;
-          var leftArc = d3.arc()
-              .startAngle(startAngle)
-              .endAngle(endAngle)
-              .innerRadius(innerRadius)
-              .outerRadius(outerRadius);
-          this.setState({leftArc: leftArc()});
+        arcTween: function (newAngle) {
+          return function(d) {
+            var interpolate = d3.interpolate(d.endAngle, newAngle);
+            return function(t) {
+              d.endAngle = interpolate(t);
+              return arc(d);
+            };
+          };
         },
 
         componentDidMount: function() {
-          var steps = 200;
-          var runs = 0;
-          var interval = setInterval(function(){
-              runs += 1;
-              if (runs === steps) {
-                clearInterval(interval);
-                return;
-              } else {
-                this.increaseAngle(steps, runs);
-              }
-          }.bind(this), 2);
+          var foreground = d3.select('path').datum({endAngle: startAngle});
+          foreground.transition()
+          .duration(750)
+          .attrTween("d", this.arcTween(pi*0.2));
         },
 
         render: function() {
@@ -75,7 +70,7 @@
           return (
             <svg width={width} height={height}>
               <g transform={transform}>
-                <path d={this.state.leftArc} style={{color: 'blue'}}></path>
+                <path ref='foreground' d={this.state.leftArc} style={{fill: 'blue'}}></path>
               </g>
             </svg>
           );
