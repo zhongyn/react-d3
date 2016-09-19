@@ -9,86 +9,17 @@
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
     <script src="https://unpkg.com/jquery@3.1.0/dist/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/babel" src="rainbow-graph.js"></script>
 
   </head>
   <body>
 
     <div id="content"></div>
-    <div data-rainbow-graph='{percent: 0.75}'></div>
-    <div data-rainbow-graph='{percent: 0.5}'></div>
-    <!-- <script type="text/babel" src="scripts/example.js"></script> -->
+    <div data-rainbow-graph='{"percent": 0.55}'></div>
+    <div data-rainbow-graph='{"percent": 0.75, "fgColor": "blue"}'></div>
     <script type="text/babel">
       // To get started with this tutorial running your own code, simply remove
       // the script tag loading scripts/example.js and start writing code here.
-
-      var data = {
-        width: 150,
-        height: 75,
-        bgColor: "grey",
-        midColor: "white",
-        fgColor: "blue",
-        arcWidth: 8,
-        percent: 0.75
-      };
-
-      var pi = Math.PI;
-      var outerRadius = data.height;
-      var innerRadius = outerRadius - data.arcWidth;
-      var startAngle = -0.5 * pi;
-      var arc = d3.arc()
-                .startAngle(startAngle)
-                .innerRadius(innerRadius)
-                .outerRadius(outerRadius);
-
-      var RainbowGraph = React.createClass({
-        getInitialState: function() {
-          return {fgArc: '', midArc: ''};
-        },
-
-        increaseAngle: function(steps, runs) {
-          var fgEndAngle = (runs * this.props.data.percent / steps - 0.5) * pi;
-          var fgArc = arc({endAngle: fgEndAngle});
-          var midArc = arc({endAngle: fgEndAngle + 0.04});
-          this.setState({fgArc: fgArc, midArc: midArc});
-        },
-
-        componentDidMount: function() {
-          var steps = 80;
-          var runs = 0;
-          var interval = setInterval(function(){
-              runs += 1;
-              if (runs > steps) {
-                clearInterval(interval);
-                return;
-              } else {
-                this.increaseAngle(steps, runs);
-              }
-          }.bind(this), 8);
-        },
-
-        render: function() {
-          var width = this.props.data.width;
-          var height = this.props.data.height;
-          var transform = "translate(" + width/2 + "," + height + ")";
-          var bgArc = arc({endAngle: 0.5*pi});
-
-          return (
-            <svg width={width} height={height}>
-              <g transform={transform}>
-                <path d={bgArc} style={{fill: 'grey'}}></path>
-                <path d={this.state.midArc} style={{fill: 'white'}}></path>
-                <path d={this.state.fgArc} style={{fill: 'blue'}}></path>
-              </g>
-            </svg>
-          );
-        }
-      });
-
-      ReactDOM.render(
-        <RainbowGraph data={data} />,
-        document.getElementById('content')
-      );
-
     </script>
 
   </body>
